@@ -11,7 +11,7 @@ for i=0, 9
 do
 	for j = 0,9 do
 
-	createRect(i*(game.width/10) + (game.width/20), j*(game.height/10) + game.width/20, i, j)
+	createRect(i*(game.width/10) + (game.width/20), j*(game.height/10) + game.width/20)
 	end
 
 
@@ -22,7 +22,7 @@ end
 end
 
 
-function createRect(xpos, ypos, xgrid, ygrid)
+function createRect(xpos, ypos)
 rect = {}
 rect.x = xpos
 rect.y = ypos
@@ -35,8 +35,7 @@ rect.speed = 0
 rect.color = {0, 0, 0}
 rect.clicked = 0
 rect.mode = "line"
-rect.xgrid = xgrid
-rect.ygrid = ygrid
+
 table.insert(listOfRectangles, rect)
 
 end
@@ -76,7 +75,7 @@ function love.mousepressed(x, y, button, istouch)
 	if button == 2 then
 
 		for i,v in ipairs(listOfRectangles) do
-			--v.color = {255,255,255}
+			v.color = {255,255,255}
 			v.clicked =0
 			v.mode = "line"
 			
@@ -99,8 +98,11 @@ for i,v in ipairs(listOfRectangles) do
 	love.graphics.rectangle(v.mode, v.x, v.y, v.width, v.height)
 
 
-	love.graphics.print(string.char(v.xgrid+65) .. v.ygrid+1, v.x+(game.width/20), v.y+game.height/20)
-
+	love.graphics.print("X", v.x+(game.width/20), v.y+game.height/20)
+--if v.clicked == 1 then
+--	love.graphics.setColor(255,0,0)
+--	love.graphics.rectangle("fill", v.x, v.y, v.width, v.height)
+--end
 
 end
 
