@@ -1,6 +1,7 @@
+
 function love.load()
 		listOfRectangles = {}
-		currentLocation = {2,7}
+		currentLocation = {5,7}
 		game = {}
 		window = {}
 		window.width = 1024
@@ -35,6 +36,8 @@ function createRect(xpos, ypos, xgrid, ygrid)
 end
 
 function love.update(dt)
+
+
 
 end
 
