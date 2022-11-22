@@ -2,17 +2,23 @@
 function love.load()
 	math.randomseed(os.time())
 
---puzzle1 = {{1,3}, {3,4}, }
+puzzle1 = 
+{{1,1}, {2,1}, {2,3}, {3,2}, {3,1}, {6,3},
+ {4,3}, {4,2}, {5,3}, {5,1}, {5,3}, {6,2}, 
+ {3,3}, {9,1}, {4,2}, {9,2}, {5,1}, {4,1}, 
+ {3,2}, {1,3}, {7,1}, {7,3}, {2,3}, {4,3}, 
+ {8,3}, {8,2}, {7,2}, {5,1}, {6,2}, {1,2}, 
+ {9,3}, {9,1}, {9,3}, {6,3}, {6,1}, {1,3}}
 
 
 		listOfRectangles = {}
 		currentLocation = {1,1}
-		colourList = {{0,0.5,0}, {1,0,0}, {0,1,0}, {0,0,1}, {1,1,0}, {0, 1, 1}}
-		tangramList = {"animal01.png", "animal03.png", "animal04.png", "animal05.png", "animal06.png", "animal07.png"}
+		colourList = {{1,0.6,0.2}, {0.2,0.6,0.2}, {0.6,0.2,1}}
+		tangramList = {"bird37.png", "animal01.png", "man28.png", "animal02.png", "boat01.png", "bird32.png", "animal09.png", "man11.png", "boat09.png"}
 		game = {}
 		window = {}
-		window.width = 1920
-		window.height = 1080
+		window.width = 1280
+		window.height = 720
 		game.width = window.height * 0.9
 		game.height = window.height * 0.9
 		game.gridx = 6
@@ -21,11 +27,11 @@ function love.load()
 		for i=1, game.gridx
 			do
 				for j = 1, game.gridy do
-				createRect(i*(game.width/game.gridy) + (game.width/12) - 200, j*(game.height/game.gridy) + (game.width/12) - 200, i, j, 0, 0)
+				createRect((i-1)*(game.width/game.gridy) + (game.width/12) , (j-1)*(game.height/game.gridy) + (game.width/12) , i, j, puzzle1[i + (6*(j-1))][2], puzzle1[i+(6*(j-1))][1])
 				end
 			end
 
-			 love.graphics.setBackgroundColor( 1, 1, 1, 1)
+		love.graphics.setBackgroundColor( 1, 1, 1, 1)
 end
 
 
@@ -42,8 +48,8 @@ function createRect(xpos, ypos, xgrid, ygrid, colour, tangram)
 		rect.xgrid = xgrid
 		rect.ygrid = ygrid
 		rect.status = 0
-		rect.colour = colourList[math.random(1,3)]
-		rect.tangram = math.random(1,6)
+		rect.colour = colour
+		rect.tangram = tangram
 		rect.visited = 0
 		table.insert(listOfRectangles, rect)
 end
@@ -65,10 +71,6 @@ function love.mousepressed(x, y, button, istouch)
 						y >= v.y
 						and
 						y <= (v.y+(game.height/game.gridy))
-						-- and
-						-- v.xgrid == currentLocation[1]
-						-- and
-						-- v.ygrid == currentLocation[2]
 					)
 
 				then
@@ -167,7 +169,7 @@ function love.draw()
 					-- 	love.graphics.setColor(0,1,1)
 					-- end
 
-			love.graphics.setColor(v.colour)
+			love.graphics.setColor(colourList[v.colour])
 			love.graphics.rectangle("fill", v.x, v.y, v.width, v.height)
 
 			love.graphics.setColor(0,0,0,1)
@@ -176,25 +178,25 @@ function love.draw()
 
 	myImage = love.graphics.newImage(tangramList[v.tangram])
 	love.graphics.setColor(1,1,1)
-	love.graphics.draw(myImage, v.x +40, v.y + 40, 0, 0.5, 0.5)
+	love.graphics.draw(myImage, v.x +v.width/4, v.y + v.width/4, 0, 0.4, 0.4)
 
 
 			if v.status ==1 then
 				love.graphics.setColor(1,1,1)
-			love.graphics.circle("fill", v.x + v.width/2, v.y + v.height/2, 50)
+			love.graphics.circle("fill", v.x + v.width/2, v.y + v.height/2, 20)
 			love.graphics.setColor(0,0,0)
-			love.graphics.circle("line", v.x + v.width/2, v.y + v.height/2, 50)
+			love.graphics.circle("line", v.x + v.width/2, v.y + v.height/2, 20)
 			end
 
 
 			if v.status == 2 then
 				moveImage = love.graphics.newImage("notArrow.png")
-				love.graphics.draw(moveImage, v.x + 40, v.y + 40)
-			end
+				love.graphics.draw(moveImage, v.x + v.width/4, v.y + v.width/4)
+							end
 
 			if v.visited == 1 then
 				visitImage = love.graphics.newImage("feet.png")
-				love.graphics.draw(visitImage, v.x + 40, v.y + 40)
+				love.graphics.draw(visitImage, v.x + v.width/4, v.y + v.width/4, 0, 0.5, 0.5)
 			end
 
 	end
