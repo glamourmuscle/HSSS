@@ -1,40 +1,44 @@
 
 function love.load()
+	--initialise random seed for random paramters based on os time
 	math.randomseed(os.time())
 
-puzzle1 = 
-{{1,1}, {2,1}, {2,3}, {3,2}, {3,1}, {6,3},
- {4,3}, {4,2}, {5,3}, {5,1}, {5,3}, {6,2}, 
- {3,3}, {9,1}, {4,2}, {9,2}, {5,1}, {4,1}, 
- {3,2}, {1,3}, {7,1}, {7,3}, {2,3}, {4,3}, 
- {8,3}, {8,2}, {7,2}, {5,1}, {6,2}, {1,2}, 
- {9,3}, {9,1}, {9,3}, {6,3}, {6,1}, {1,3}}
+-- array containing references to tangram images and colours for one puzzle
+-- will add more puzzles - could be reading these from .csv files maybe rather than hard coding them all?
+	puzzle1 = 
+	{{1,1}, {2,1}, {2,3}, {3,2}, {3,1}, {6,3},
+	 {4,3}, {4,2}, {5,3}, {5,1}, {5,3}, {6,2}, 
+	 {3,3}, {9,1}, {4,2}, {9,2}, {5,1}, {4,1}, 
+	 {3,2}, {1,3}, {7,1}, {7,3}, {2,3}, {4,3}, 
+	 {8,3}, {8,2}, {7,2}, {5,1}, {6,2}, {1,2}, 
+	 {9,3}, {9,1}, {9,3}, {6,3}, {6,1}, {1,3}}
 
+--initialise 3 basic colours and 9 choices of tangrams. can add different colours / tangrams to add pseudo randomisation to puzzles
+	colourList = {{1,0.6,0.2}, {0.2,0.6,0.2}, {0.6,0.2,1}}
+	tangramList = {"bird37.png", "animal01.png", "man28.png", "animal02.png", "boat01.png", "bird32.png", "animal09.png", "man11.png", "boat09.png"}
 
-		listOfRectangles = {}
-		currentLocation = {1,1}
-		colourList = {{1,0.6,0.2}, {0.2,0.6,0.2}, {0.6,0.2,1}}
-		tangramList = {"bird37.png", "animal01.png", "man28.png", "animal02.png", "boat01.png", "bird32.png", "animal09.png", "man11.png", "boat09.png"}
-		game = {}
-		window = {}
-		window.width = 1280
-		window.height = 720
-		game.width = window.height * 0.9
-		game.height = window.height * 0.9
-		game.gridx = 6
-		game.gridy = 6
-		love.window.setMode(window.width, window.height)
-		for i=1, game.gridx
-			do
-				for j = 1, game.gridy do
-				createRect((i-1)*(game.width/game.gridy) + (game.width/12) , (j-1)*(game.height/game.gridy) + (game.width/12) , i, j, puzzle1[i + (6*(j-1))][2], puzzle1[i+(6*(j-1))][1])
-				end
+	listOfRectangles = {}
+	currentLocation = {1,1}		
+	game = {}
+	window = {}
+	window.width = 1280
+	window.height = 720
+	game.width = window.height * 0.9
+	game.height = window.height * 0.9
+	game.gridx = 6
+	game.gridy = 6
+	love.window.setMode(window.width, window.height)
+	love.graphics.setBackgroundColor( 1, 1, 1, 1)
+	--populate list of rectangles with data based on grid positions and puzzle data
+	for i=1, game.gridx
+		do
+			for j = 1, game.gridy do
+			createRect((i-1)*(game.width/game.gridy) + (game.width/12) , (j-1)*(game.height/game.gridy) + (game.width/12) , i, j, puzzle1[i + (6*(j-1))][2], puzzle1[i+(6*(j-1))][1])
 			end
-
-		love.graphics.setBackgroundColor( 1, 1, 1, 1)
+	end	
 end
 
-
+-- function that creates rectangle objects with various properties
 function createRect(xpos, ypos, xgrid, ygrid, colour, tangram)
 
 		rect = {}
@@ -56,52 +60,48 @@ end
 
 function love.update(dt)
 
-
+--love.update currently unused
 
 end
 
+-- main mouse click function. will need to be updated to reflect TOUCH INPUT at some point
 function love.mousepressed(x, y, button, istouch)
-
-  if button == 1 then
-
+-- go through the list of rectangles and check if the mouse click location is within it's bounds
+  	if button == 1 then
 		for i,v in ipairs(listOfRectangles) do
-				if
-					(	x >= (v.x) and x <= (v.x+(game.width/game.gridx))
-						and
-						y >= v.y
-						and
-						y <= (v.y+(game.height/game.gridy))
+			if
+				(	x >= (v.x) and x <= (v.x+(game.width/game.gridx))
+					and
+					y >= v.y
+					and
+					y <= (v.y+(game.height/game.gridy))
 					)
-
-				then
-					if v.status == 1 then
-
+			then
+-- if the click is within the bounds and the rectangle is the current play position, call the currentPressed function					
+				if v.status == 1 then
 				currentPressed(i)
-			end
-
-			if v.status == 2 then
-			newPressed(i)
-		end
-					-- else if v.status == 2 then
-					-- 	newPressed(i)
-					-- end
 				end
+-- if the click is within a rectangle that is a possible move from the play position, call the newPressed function
+				if v.status == 2 then
+				newPressed(i)
+				end
+					
+			end
 		end
 	end
-
-	if button == 2 then
-		for i,v in ipairs(listOfRectangles) do
-			v.clicked =0
-			v.mode = "line"
-		end
-	end
-
+--currently unused RESET FUNCTION ON RIGHT CLICK
+	-- if button == 2 then
+	-- 	for i,v in ipairs(listOfRectangles) do
+	-- 		v.clicked =0
+	-- 		v.mode = "line"
+	-- 	end
+	-- end
 end
 
 
 function currentPressed(rectNum)
 
---	listOfRectangles[rectNum].status = 1
+
 	currentxgrid = listOfRectangles[rectNum].xgrid
 	currentygrid = listOfRectangles[rectNum].ygrid
 
@@ -136,12 +136,8 @@ function newPressed(rectNum)
 		end
 
 	listOfRectangles[rectNum].status = 1
-	-- currentLocation[1] = listOfRectangles[rectNum].xpos
-	-- currentLocation[2] = listOfRectangles[rectNum].ypos
 	currentLocation[1] = listOfRectangles[rectNum].xgrid
 	currentLocation[2] = listOfRectangles[rectNum].ygrid
-
-
 end
 
 
@@ -151,53 +147,45 @@ function love.draw()
 
 
 	for i,v in ipairs(listOfRectangles) do
+-- Set status to 1 if rectangle is the current game grid position
+		if v.xgrid == currentLocation[1] and v.ygrid == currentLocation[2] then
+				v.status = 1
+					
+		end
 
-				if v.xgrid == currentLocation[1] and v.ygrid == currentLocation[2] then
-					v.status = 1
-					-- v.mode = "fill"
-				end
-
-					-- if v.status == 0 then
-					-- 	love.graphics.setColor(v.color)
-					-- end
-
-					-- if v.status == 1 then
-					-- 	love.graphics.setColor(0, 1, 0)
-					-- end
-					--
-					-- if v.status == 2 then
-					-- 	love.graphics.setColor(0,1,1)
-					-- end
-
-			love.graphics.setColor(colourList[v.colour])
-			love.graphics.rectangle("fill", v.x, v.y, v.width, v.height)
-
-			love.graphics.setColor(0,0,0,1)
-			love.graphics.rectangle("line", v.x, v.y, v.width, v.height)
+-- set colour based on rect colour parameter and draw block colour				
+		love.graphics.setColor(colourList[v.colour])
+		love.graphics.rectangle("fill", v.x, v.y, v.width, v.height)
+-- draw black outline
+		love.graphics.setColor(0,0,0,1)
+		love.graphics.rectangle("line", v.x, v.y, v.width, v.height)
 		--	love.graphics.print(string.char(v.xgrid+65) .. v.ygrid+1, v.x+(game.width/20), v.y+game.height/20)
 
-	myImage = love.graphics.newImage(tangramList[v.tangram])
-	love.graphics.setColor(1,1,1)
-	love.graphics.draw(myImage, v.x +v.width/4, v.y + v.width/4, 0, 0.4, 0.4)
 
+-- draw tangram image based on rect tangram parameter
+		myImage = love.graphics.newImage(tangramList[v.tangram])
+		love.graphics.setColor(1,1,1)
+		love.graphics.draw(myImage, v.x +v.width/4, v.y + v.width/4, 0, 0.4, 0.4)
 
-			if v.status ==1 then
-				love.graphics.setColor(1,1,1)
+--draw circle over the rectangle if it's the current game grid position
+		if v.status ==1 then
+			love.graphics.setColor(1,1,1)
 			love.graphics.circle("fill", v.x + v.width/2, v.y + v.height/2, 20)
 			love.graphics.setColor(0,0,0)
 			love.graphics.circle("line", v.x + v.width/2, v.y + v.height/2, 20)
-			end
+		end
 
+-- draw the 'you can move to here' image over the rectangle if it's a valid move position (status 2)
+		if v.status == 2 then
+			moveImage = love.graphics.newImage("notArrow.png")
+			love.graphics.draw(moveImage, v.x + v.width/4, v.y + v.width/4)
+		end
 
-			if v.status == 2 then
-				moveImage = love.graphics.newImage("notArrow.png")
-				love.graphics.draw(moveImage, v.x + v.width/4, v.y + v.width/4)
-							end
-
-			if v.visited == 1 then
-				visitImage = love.graphics.newImage("feet.png")
-				love.graphics.draw(visitImage, v.x + v.width/4, v.y + v.width/4, 0, 0.5, 0.5)
-			end
+-- draw the 'breadcrumb trail/been visited' image over rectangles that have been moved out of
+		if v.visited == 1 then
+			visitImage = love.graphics.newImage("feet.png")
+			love.graphics.draw(visitImage, v.x + v.width/4, v.y + v.width/4, 0, 0.5, 0.5)
+		end
 
 	end
 
