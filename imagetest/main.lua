@@ -3,5 +3,5 @@ function love.load()
 end
 
 function love.draw()
-  love.graphics.draw(myImage, 100, 100, 0, 4, 4)
+  love.graphics.draw(myImage, math.random(1,100), 100, 0, 4, 4)
 end
