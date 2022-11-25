@@ -16,7 +16,7 @@ function love.load()
 --initialise 3 basic colours and 9 choices of tangrams. can add different colours / tangrams to add pseudo randomisation to puzzles
 	colourList = {{1,0.6,0.2}, {0.2,0.6,0.2}, {0.6,0.2,1}}
 	tangramList = {"bird37.png", "animal01.png", "man28.png", "animal02.png", "boat01.png", "bird32.png", "animal09.png", "man11.png", "boat09.png"}
-
+player = 3
 	listOfRectangles = {}
 	currentLocation = {1,1}		
 	game = {}
@@ -30,11 +30,10 @@ function love.load()
 	love.window.setMode(window.width, window.height)
 	love.graphics.setBackgroundColor( 1, 1, 1, 1)
 	--populate list of rectangles with data based on grid positions and puzzle data
-	for i=1, game.gridx
-		do
-			for j = 1, game.gridy do
+	for i=1, game.gridx do
+		for j = 1, game.gridy do
 			createRect((i-1)*(game.width/game.gridy) + (game.width/12) , (j-1)*(game.height/game.gridy) + (game.width/12) , i, j, puzzle1[i + (6*(j-1))][2], puzzle1[i+(6*(j-1))][1])
-			end
+		end
 	end	
 end
 
@@ -126,18 +125,55 @@ end
 
 function newPressed(rectNum)
 
+if moveChecker(rectNum) == 1 then
+
 	for i, v in ipairs(listOfRectangles) do
 		if v.xgrid == currentLocation[1] and v.ygrid == currentLocation[2] then
 			v.visited = 1
 		end
 	end
-		for i, v in ipairs(listOfRectangles) do
-			v.status = 0
-		end
+	for i, v in ipairs(listOfRectangles) do
+		v.status = 0
+	end
 
 	listOfRectangles[rectNum].status = 1
 	currentLocation[1] = listOfRectangles[rectNum].xgrid
 	currentLocation[2] = listOfRectangles[rectNum].ygrid
+
+end
+end
+
+
+function moveChecker(x)
+	for i,v in ipairs(listOfRectangles) do
+		if v.status == 1 then
+			tangNow = v.tangram
+			clrNow = v.colour
+		end
+	end
+
+	if (listOfRectangles[x].colour == clrNow) or (listOfRectangles[x].tangram == tangNow) then
+		return 1
+	else
+		return 0
+	end
+end
+
+
+
+function keypressed(key)
+	if key == "1" then
+		player = 1
+	end
+	
+	if key == "2" then
+	player = 2
+	end
+
+	if key == "3" then
+	player = 3
+	end
+
 end
 
 
@@ -149,10 +185,8 @@ function love.draw()
 	for i,v in ipairs(listOfRectangles) do
 -- Set status to 1 if rectangle is the current game grid position
 		if v.xgrid == currentLocation[1] and v.ygrid == currentLocation[2] then
-				v.status = 1
-					
+			v.status = 1		
 		end
-
 -- set colour based on rect colour parameter and draw block colour				
 		love.graphics.setColor(colourList[v.colour])
 		love.graphics.rectangle("fill", v.x, v.y, v.width, v.height)
