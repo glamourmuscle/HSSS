@@ -13,6 +13,9 @@ function love.load()
 	 {8,3}, {8,2}, {7,2}, {5,1}, {6,2}, {1,2}, 
 	 {9,3}, {9,1}, {9,3}, {6,3}, {6,1}, {1,3}}
 
+gridChoice1 = {1,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,1}
+gridChoice2 = {0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,1,0,0,1,0,1,0,1,1,0,1,0,1,0}
+
 --initialise 3 basic colours and 9 choices of tangrams. can add different colours / tangrams to add pseudo randomisation to puzzles
 	colourList = {{1,0.6,0.2}, {0.2,0.6,0.2}, {0.6,0.2,1}}
 	tangramList = {"bird37.png", "animal01.png", "man28.png", "animal02.png", "boat01.png", "bird32.png", "animal09.png", "man11.png", "boat09.png"}
@@ -48,6 +51,7 @@ function createRect(xpos, ypos, xgrid, ygrid, colour, tangram)
 		rect.color = {1, 1, 1}
 		rect.clicked = 0
 		rect.mode = "line"
+		rect.playerFlag = 3
 		rect.xgrid = xgrid
 		rect.ygrid = ygrid
 		rect.status = 0
@@ -59,6 +63,23 @@ end
 
 function love.update(dt)
 
+if player == 1 then
+for i,v in ipairs(listOfRectangles) do
+	v.playerFlag = gridChoice1[i]
+end
+end
+
+if player == 2 then
+for i,v in ipairs(listOfRectangles) do
+	v.playerFlag = gridChoice2[i]
+end
+end
+
+if player == 3 then
+for i,v in ipairs(listOfRectangles) do
+	v.playerFlag = 3
+end
+end
 --love.update currently unused
 
 end
@@ -161,16 +182,16 @@ end
 
 
 
-function keypressed(key)
-	if key == "1" then
+function love.keypressed(key)
+	if key == "q" then
 		player = 1
 	end
 	
-	if key == "2" then
+	if key == "w" then
 	player = 2
 	end
 
-	if key == "3" then
+	if key == "e" then
 	player = 3
 	end
 
@@ -187,9 +208,12 @@ function love.draw()
 		if v.xgrid == currentLocation[1] and v.ygrid == currentLocation[2] then
 			v.status = 1		
 		end
--- set colour based on rect colour parameter and draw block colour				
+-- set colour based on rect colour parameter and draw block colour	
+if v.playerFlag ==	0 or v.playerFlag == 3 then		
 		love.graphics.setColor(colourList[v.colour])
 		love.graphics.rectangle("fill", v.x, v.y, v.width, v.height)
+	end
+
 -- draw black outline
 		love.graphics.setColor(0,0,0,1)
 		love.graphics.rectangle("line", v.x, v.y, v.width, v.height)
@@ -197,10 +221,11 @@ function love.draw()
 
 
 -- draw tangram image based on rect tangram parameter
+if v.playerFlag == 1 or v.playerFlag == 3 then 
 		myImage = love.graphics.newImage(tangramList[v.tangram])
 		love.graphics.setColor(1,1,1)
 		love.graphics.draw(myImage, v.x +v.width/4, v.y + v.width/4, 0, 0.4, 0.4)
-
+end
 --draw circle over the rectangle if it's the current game grid position
 		if v.status ==1 then
 			love.graphics.setColor(1,1,1)
@@ -211,6 +236,7 @@ function love.draw()
 
 -- draw the 'you can move to here' image over the rectangle if it's a valid move position (status 2)
 		if v.status == 2 then
+			love.graphics.setColor(1,1,1)
 			moveImage = love.graphics.newImage("notArrow.png")
 			love.graphics.draw(moveImage, v.x + v.width/4, v.y + v.width/4)
 		end
